@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Birthdays Admin</title>
+    <style>
+    
+      body {
+        width: 100%;
+        background-color: linen;
+        display: flex;
+        flex-direction: column;
+      }
+
+      main {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 32px;
+        gap: 32px;
+      }
+
+      form {
+        width: 300px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+      }
+
+      form > label {
+        margin: 0 50px;
+        align-self: flex-start;
+      }
+
+      form > input {
+        width: 200px;
+      }
+
+      form > button {
+        width: 150px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <main>
+      <form action="/" method="post">
+        <label for="name">Name:</label>
+        <input
+          id="name"
+          name="name"
+          type="text"
+          placeholder="Name"
+          autocomplete="off"
+        />
+        <label for="birthdate">Birthdate:</label>
+        <input
+          id="birthdate"
+          name="birthdate"
+          type="date"
+          placeholder="dd-MM-yyyy"
+          autocomplete="off"
+        />
+        <br />
+        <button type="submit">Add</button>
+      </form>
+
+      <section>
+        <h1>Birthdays</h1>
+        <p style="font-size: 14px;">Click on a name to delete it.</p>
+
+        <ul>
+          {{range .Persons}}
+          <li id="{{.ID}}" onclick="deleteName(event)">
+            {{.Name}} - {{.Birthdate}}
+          </li>
+          {{end}}
+        </ul>
+      </section>
+    </main>
+
+    <script>
+      function deleteName(e) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('DELETE', '/' + encodeURIComponent(e.target.id), true);
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState == 4 && xhr.status == 200) {
+            location.reload();
+          }
+        };
+        xhr.send();
+      }
+    </script>
+  </body>
+</html>
