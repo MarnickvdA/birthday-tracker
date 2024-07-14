@@ -9,6 +9,10 @@ import (
 	"github.com/joho/godotenv"
 )
 
+var (
+	tmpl = template.Must(template.ParseFiles("web/homepage.html"))
+)
+
 type PersonPageData struct {
 	Persons []Person
 }
@@ -25,7 +29,7 @@ func getPageHandler(w http.ResponseWriter, r *http.Request) {
 		Persons: persons,
 	}
 
-	if err := template.Must(template.ParseFiles("templates/homepage.html")).Execute(w, data); err != nil {
+	if err := tmpl.Execute(w, data); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
@@ -40,7 +44,7 @@ func getBirthdaysHandler(w http.ResponseWriter, r *http.Request) {
 	message, err := PostBirthdaySlackMessage(birthdays)
 
 	if err != nil {
-		log.Fatal(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
 	fmt.Fprintf(w, "%v", message)

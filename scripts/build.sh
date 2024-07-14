@@ -2,7 +2,7 @@
 git checkout main
 git pull
 
-docker build --rm -t birthdays-tracker:alpha .
+docker build . --rm -t birthdays-tracker:alpha -f ./docker/Dockerfile
 
 docker container stop birthdays-tracker
 docker container rm birthdays-tracker
