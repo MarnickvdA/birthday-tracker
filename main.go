@@ -40,6 +40,8 @@ func main() {
 	http.HandleFunc("DELETE /{id}", apiCfg.handlerRemovePerson)
 	http.HandleFunc("POST /today", apiCfg.handlerSendBirthdayMessage)
 
+	http.Handle("GET /css/", http.StripPrefix("/css/", http.FileServer(http.Dir("./public/css"))))
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		log.Fatal("PORT not found!")

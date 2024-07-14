@@ -1,0 +1,167 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  font-family: 'Courier New', Courier, monospace;
+  margin: 0;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+#root,
+#__next {
+  isolation: isolate;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: lightblue;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+main {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px;
+  gap: 32px;
+}
+
+.gopher {
+  width: 200px;
+  height: 200px;
+  position: absolute;
+  bottom: -50px;
+  right: 50px;
+  transition: transform 500ms;
+  transform: rotate(-15deg);
+}
+
+.gopher:hover {
+  transform: rotate(15deg);
+}
+
+.card {
+  padding: 16px;
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 8px;
+}
+
+form {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+@media only screen and (max-width: 600px) {
+  form {
+    flex-direction: column;
+
+    input {
+      min-width: 100%;
+    }
+
+    button {
+      margin-top: 8px;
+    }
+  }
+
+  .gopher {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    bottom: 100px;
+    right: -25px;
+    transition: transform 500ms;
+    transform: rotate(-90deg);
+  }
+
+  .gopher:hover {
+    transform: rotate(-75deg);
+  }
+}
+
+section {
+  min-width: min(100%, 600px);
+  text-align: start;
+}
+
+h1 {
+  margin-bottom: 16px;
+}
+
+ul {
+  padding-left: 16px;
+}
+
+li {
+  width: 100%;
+  padding-bottom: 8px;
+}
+
+.item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  column-gap: 8px;
+
+  button {
+    border-radius: 100%;
+    width: 28px;
+    height: 28px;
+  }
+
+  button:hover {
+    font-weight: 800;
+  }
+}
+
+footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 32px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
