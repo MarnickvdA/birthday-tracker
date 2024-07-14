@@ -2,9 +2,9 @@ FROM golang:1.22.5 AS build
  
 WORKDIR /app
  
-COPY go.mod ./ 
-# COPY go.mod go.sum ./
-# RUN go mod download
+# COPY go.mod ./ 
+COPY go.mod go.sum ./
+RUN go mod download
 
 COPY *.go ./
  
@@ -14,7 +14,8 @@ FROM scratch
 
 COPY --from=build /birthdays-tracker .
 
-# copy all resource files
+# copy all other files
+COPY .env .
 COPY /templates /templates
 
 CMD ["/birthdays-tracker"]

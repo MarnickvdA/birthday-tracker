@@ -9,17 +9,29 @@ import (
 	"io/fs"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
 )
+
+type Person struct {
+	ID        string
+	Name      string
+	Birthdate string
+}
+
+type Birthday struct {
+	Name string
+	Age  int
+}
 
 var (
 	mu sync.Mutex
 )
 
 func getDatabaseFile() string {
-	path := os.Getenv("FOO")
+	path := os.Getenv("DATABASE_PATH")
 
 	if path != "" {
 		return path
@@ -109,61 +121,106 @@ func removePerson(id string) (d string, err error) {
 	mu.Lock()
 	defer mu.Unlock()
 
-	err = removeLineFromFile(getDatabaseFile(), getDatabaseFile()+string(time.Now().Unix()), id)
+	inputFile := getDatabaseFile()
+	outputFile := getDatabaseFile() + string(time.Now().Unix())
+
+	inFile, err := os.Open(inputFile)
 	if err != nil {
-		return id, err
+		return "", err
+	}
+	defer inFile.Close()
+
+	outFile, err := os.Create(outputFile)
+	if err != nil {
+		return "", err
+	}
+	defer outFile.Close()
+
+	scanner := bufio.NewScanner(inFile)
+	writer := bufio.NewWriter(outFile)
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		if strings.Split(strings.TrimSpace(line), ";")[0] != id {
+			_, err := writer.WriteString(line + "\n")
+			if err != nil {
+				return "", err
+			}
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		return "", err
+	}
+
+	if err := writer.Flush(); err != nil {
+		return "", err
+	}
+
+	err = os.Rename(outputFile, inputFile)
+	if err != nil {
+		return "", err
 	}
 
 	return id, nil
 }
 
-func removeLineFromFile(inputFile, outputFile, id string) error {
-	// Open the input file for reading
-	inFile, err := os.Open(inputFile)
+func getBirthdaysToday() (birthdays []Birthday, err error) {
+	persons, err := getPersons()
+
 	if err != nil {
-		return err
+		return nil, err
 	}
-	defer inFile.Close()
 
-	// Create the output file for writing
-	outFile, err := os.Create(outputFile)
-	if err != nil {
-		return err
-	}
-	defer outFile.Close()
+	birthdays = make([]Birthday, 0)
 
-	// Create a scanner to read the input file
-	scanner := bufio.NewScanner(inFile)
-	writer := bufio.NewWriter(outFile)
-
-	// Read the input file line by line
-	for scanner.Scan() {
-		line := scanner.Text()
-		// Check if the line matches the string to be removed
-		if strings.Split(strings.TrimSpace(line), ";")[0] != id {
-			// Write the line to the output file if it does not match
-			_, err := writer.WriteString(line + "\n")
-			if err != nil {
-				return err
-			}
+	for _, person := range persons {
+		if person.isBirthday() {
+			birthdays = append(birthdays, Birthday{Name: person.Name, Age: person.getAge()})
 		}
 	}
 
-	// Check for scanner errors
-	if err := scanner.Err(); err != nil {
-		return err
-	}
+	return birthdays, nil
+}
 
-	// Flush the writer to ensure all data is written to the output file
-	if err := writer.Flush(); err != nil {
-		return err
-	}
+func (p Person) getBirthdayParts() (year, month, day int) {
+	birthdayParts := strings.Split(p.Birthdate, "-")
 
-	// Replace the original file with the modified file
-	err = os.Rename(outputFile, inputFile)
+	y, err := strconv.Atoi(birthdayParts[0])
+
 	if err != nil {
-		return err
+		panic(err)
 	}
 
-	return nil
+	m, err := strconv.Atoi(birthdayParts[1])
+
+	if err != nil {
+		panic(err)
+	}
+
+	d, err := strconv.Atoi(birthdayParts[2])
+
+	if err != nil {
+		panic(err)
+	}
+
+	return y, m, d
+}
+
+func (p Person) isBirthday() bool {
+	_, m, d := p.getBirthdayParts()
+
+	return int(time.Now().Month()) == m && time.Now().Day() == d
+}
+
+func (p Person) getAge() int {
+	y, m, d := p.getBirthdayParts()
+
+	age := time.Now().Year() - y
+
+	if time.Now().Compare(time.Date(time.Now().Year(), time.Month(m), d, 0, 0, 0, 0, time.Local)) < 0 {
+		age--
+	}
+
+	return age
 }

@@ -1,16 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"text/template"
-)
 
-type Person struct {
-	ID        string
-	Name      string
-	Birthdate string
-}
+	"github.com/joho/godotenv"
+)
 
 type PersonPageData struct {
 	Persons []Person
@@ -31,6 +28,22 @@ func getPageHandler(w http.ResponseWriter, r *http.Request) {
 	if err := template.Must(template.ParseFiles("templates/homepage.html")).Execute(w, data); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+}
+
+func getBirthdaysHandler(w http.ResponseWriter, r *http.Request) {
+	birthdays, err := getBirthdaysToday()
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	message, err := PostBirthdaySlackMessage(birthdays)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Fprintf(w, "%v", message)
 }
 
 func addBirthdayHandler(w http.ResponseWriter, r *http.Request) {
@@ -65,11 +78,17 @@ func removeBirthdayHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Error loading .env file: %s", err)
+	}
+
 	initDatabase()
 
 	http.HandleFunc("GET /", getPageHandler)
 	http.HandleFunc("POST /", addBirthdayHandler)
 	http.HandleFunc("DELETE /{id}", removeBirthdayHandler)
+	http.HandleFunc("GET /today", getBirthdaysHandler)
 
 	log.Println("Listening on port 1337")
 	log.Fatal(http.ListenAndServe(":1337", nil))

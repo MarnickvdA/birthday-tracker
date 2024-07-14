@@ -9,6 +9,13 @@ docker build --rm -t birthdays-tracker:alpha .
 docker run -d -p 1337:1337 --name birthdays-tracker birthdays-tracker:alpha 
 ```
 
+## Slack Integration
+
+Environment variables:
+
+- `SLACK_API_TOKEN` for authentication to the Slack API
+- `SLACK_CHANNEL` for selecting the channel where the birthday message should be posted
+
 ## TODO
 
 - Add Postgres DB
