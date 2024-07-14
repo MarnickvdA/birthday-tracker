@@ -1,5 +1,6 @@
 #!/bin/bash
-git pull origin/main
+git checkout main
+git pull
 
 docker build --rm -t birthdays-tracker:alpha .
 
