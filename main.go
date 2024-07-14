@@ -28,7 +28,7 @@ func getPageHandler(w http.ResponseWriter, r *http.Request) {
 		Persons: persons,
 	}
 
-	if err := template.Must(template.ParseFiles("index.html")).Execute(w, data); err != nil {
+	if err := template.Must(template.ParseFiles("templates/homepage.html")).Execute(w, data); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }

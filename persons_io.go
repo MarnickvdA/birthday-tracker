@@ -14,25 +14,33 @@ import (
 	"time"
 )
 
-const file = "data/birthdays.csv"
-
 var (
 	mu sync.Mutex
 )
+
+func getDatabaseFile() string {
+	path := os.Getenv("FOO")
+
+	if path != "" {
+		return path
+	} else {
+		return "data/birthdays.csv"
+	}
+}
 
 func initDatabase() {
 	mu.Lock()
 	defer mu.Unlock()
 
-	if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
-		log.Println("No database file found, trying to create new one at " + file)
+	if _, err := os.Stat(getDatabaseFile()); errors.Is(err, os.ErrNotExist) {
+		log.Println("No database file found, trying to create new one at " + getDatabaseFile())
 		err := os.Mkdir("data", fs.ModePerm)
 
 		if err != nil {
 			panic(err)
 		}
 
-		_, err = os.Create(file)
+		_, err = os.Create(getDatabaseFile())
 		if err != nil {
 			panic(err)
 		}
@@ -47,7 +55,7 @@ func getPersons() (persons []Person, err error) {
 	mu.Lock()
 	defer mu.Unlock()
 
-	bs, err := os.ReadFile(file)
+	bs, err := os.ReadFile(getDatabaseFile())
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +88,7 @@ func addPerson(name, birthdate string) (person Person, err error) {
 	mu.Lock()
 	defer mu.Unlock()
 
-	f, err := os.OpenFile(file, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	f, err := os.OpenFile(getDatabaseFile(), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return Person{}, err
 	}
@@ -101,7 +109,7 @@ func removePerson(id string) (d string, err error) {
 	mu.Lock()
 	defer mu.Unlock()
 
-	err = removeLineFromFile(file, file+string(time.Now().Unix()), id)
+	err = removeLineFromFile(getDatabaseFile(), getDatabaseFile()+string(time.Now().Unix()), id)
 	if err != nil {
 		return id, err
 	}
