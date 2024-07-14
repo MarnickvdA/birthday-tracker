@@ -2,6 +2,10 @@
 <html>
   <head>
     <title>Birthdays</title>
+    <meta
+      name="viewport"
+      content="width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0"
+    />
     <style>
       *,
       *::before,
@@ -73,7 +77,7 @@
         height: 200px;
         position: absolute;
         bottom: -50px;
-        right: 100px;
+        right: 50px;
         transition: transform 500ms;
         transform: rotate(-15deg);
       }
@@ -94,6 +98,34 @@
         flex-direction: row;
         align-items: center;
         gap: 8px;
+      }
+
+      @media only screen and (max-width: 600px) {
+        form {
+          flex-direction: column;
+
+          input {
+            min-width: 100%;
+          }
+
+          button {
+            margin-top: 8px;
+          }
+        }
+
+        .gopher {
+          width: 100px;
+          height: 100px;
+          position: absolute;
+          bottom: 100px;
+          right: -25px;
+          transition: transform 500ms;
+          transform: rotate(-90deg);
+        }
+
+        .gopher:hover {
+          transform: rotate(-75deg);
+        }
       }
 
       section {
@@ -166,7 +198,6 @@
           autocomplete="off"
           required
         />
-        <br />
         <button type="submit">Add</button>
       </form>
 
@@ -187,7 +218,9 @@
     </main>
 
     <footer>
-      <a target="_blank" href="https://github.com/marnickvda/birthday-tracker">Go to Source Code</a>
+      <a target="_blank" href="https://github.com/marnickvda/birthday-tracker"
+        >Go to Source Code</a
+      >
     </footer>
 
     <script>
