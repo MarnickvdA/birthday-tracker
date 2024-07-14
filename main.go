@@ -1,15 +1,13 @@
 package main
 
 import (
-	"fmt"
-	"html/template"
 	"log"
 	"net/http"
-	"strconv"
+	"text/template"
 )
 
 type Person struct {
-	ID        int
+	ID        string
 	Name      string
 	Birthdate string
 }
@@ -18,72 +16,59 @@ type PersonPageData struct {
 	Persons []Person
 }
 
-var (
-	persons []Person
-	counter = 0
-	tmpl    = template.Must(template.ParseFiles("index.html"))
-)
+func getPageHandler(w http.ResponseWriter, r *http.Request) {
+	persons, err := getPersons()
 
-func getHandler(w http.ResponseWriter, r *http.Request) {
+	if err != nil {
+		log.Fatal(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
 	data := PersonPageData{
 		Persons: persons,
 	}
 
-	if err := tmpl.Execute(w, data); err != nil {
+	if err := template.Must(template.ParseFiles("index.html")).Execute(w, data); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
 
-func postBirthdayHandler(w http.ResponseWriter, r *http.Request) {
+func addBirthdayHandler(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	name, birthdate := r.Form.Get("name"), r.Form.Get("birthdate")
+	person, err := addPerson(r.Form.Get("name"), r.Form.Get("birthdate"))
 
-	if name != "" && birthdate != "" {
-		addPerson(name, birthdate)
+	if err != nil {
+		log.Fatal(err)
+		http.Error(w, "Invalid Input", http.StatusInternalServerError)
+	} else {
+		log.Printf("Added %v\n", person)
+		getPageHandler(w, r)
 	}
-
-	getHandler(w, r)
 }
 
 func removeBirthdayHandler(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(r.PathValue("id"))
+	id := r.PathValue("id")
+
+	d, err := removePerson(id)
 
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Fatal(err)
+		http.Error(w, "Could not remove birthday", http.StatusInternalServerError)
+	} else {
+		log.Printf("Removed person with ID: %v\n", d)
 	}
-
-	removePerson(id)
-
-	fmt.Fprintln(w, "OK")
-}
-
-func addPerson(name, birthdate string) {
-	persons = append(persons, Person{ID: counter, Name: name, Birthdate: birthdate})
-	counter++
-}
-
-func removePerson(id int) {
-	for i, person := range persons {
-		if person.ID == id {
-			persons = append(persons[:i], persons[i+1:]...)
-		}
-	}
-
-	fmt.Println(persons)
 }
 
 func main() {
-	addPerson("Marnick", "1998-04-16")
-	addPerson("Simon", "1995-09-10")
-
-	http.HandleFunc("GET /", getHandler)
-	http.HandleFunc("POST /", postBirthdayHandler)
+	http.HandleFunc("GET /", getPageHandler)
+	http.HandleFunc("POST /", addBirthdayHandler)
 	http.HandleFunc("DELETE /{id}", removeBirthdayHandler)
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Println("Starting server on port 1337")
+	log.Fatal(http.ListenAndServe(":1337", nil))
 }
