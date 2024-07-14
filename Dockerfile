@@ -13,7 +13,7 @@ FROM scratch
 COPY --from=build /birthdays-tracker .
 
 # copy all other files
-COPY .env .
+COPY .env.prod .env
 COPY ./web ./web
 
 CMD ["/birthdays-tracker"]
