@@ -15,5 +15,6 @@ COPY --from=build /birthdays-tracker .
 # copy all other files
 COPY .env.prod .env
 COPY ./web ./web
+COPY ./public ./public
 
 CMD ["/birthdays-tracker"]
