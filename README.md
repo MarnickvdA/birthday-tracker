@@ -1,25 +1,43 @@
-# Basic Birthday tracker
+# Birthday Tracker 🎈
 
-Super simple Go app to track birthdays of people.
+Web app written in Go to track birthdays of people.
 
-## Running in Docker
+**Features**:
+
+- See overview of persons and their birthdays
+- Add new person with birthday
+- Remove persons
+- (WIP) Trigger Slack message of birthdays happening today
+- (WIP) Add cron configuration for running the birthday check every day
+
+**Technical improvements**:
+
+- (WIP) Add automatic db migrations to the docker-compose script w/ goose
+
+## Dependencies
+
+- docker / docker-compose
+- go
+- goose
+- sqlc
+
+## Setup
+
+We have some environment variables on which we depend in this project. Execute the command below and update the variables.
 
 ```bash
-docker build --rm -t birthdays-tracker:alpha .
-docker run -d -p 1337:1337 --name birthdays-tracker birthdays-tracker:alpha 
+cp .env.example .env
 ```
 
-## Slack Integration
+Most important is to have a PostgresQL server running to which we can connect. Be sure to add the connection URL as `DB_URL` in .env
 
-Environment variables:
+```bash
+# Run goose migrations on the postgres db
+goose postgres $DB_URL up
+```
 
-- `SLACK_API_TOKEN` for authentication to the Slack API
-- `SLACK_CHANNEL` for selecting the channel where the birthday message should be posted
+## Running with Docker
 
-## TODO
-
-- Add Postgres DB
-- Create docker-compose workflow to enable launching the app with the PostgresDB
-- Add endpoint to check who's birthday it is TODAY!
-- Add cron job integration for Slack notifications
-- Add cron job integration with reminder emails
+```bash
+docker compose up -d --build
+```

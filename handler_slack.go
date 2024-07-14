@@ -1,6 +1,7 @@
 package main
 
 import (
+	"birthdays-tracker/internal/database"
 	"bytes"
 	"errors"
 	"fmt"
@@ -8,8 +9,38 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
+	"time"
 )
+
+type Birthday struct {
+	Name string
+	Age  int
+}
+
+func (cfg *apiConfig) handlerSendBirthdayMessage(w http.ResponseWriter, r *http.Request) {
+	persons, err := cfg.DB.ListPersons(r.Context())
+	if err != nil {
+		log.Fatal(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	birthdays := make([]Birthday, 0)
+	for _, person := range persons {
+		if isBirthday(person) {
+			birthdays = append(birthdays, Birthday{Name: person.Name, Age: getAge(person)})
+		}
+	}
+
+	message, err := PostBirthdaySlackMessage(birthdays)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	fmt.Fprintf(w, "%v", message)
+}
 
 func PostBirthdaySlackMessage(birthdays []Birthday) (string, error) {
 	if len(birthdays) == 0 {
@@ -73,7 +104,7 @@ func PostBirthdaySlackMessage(birthdays []Birthday) (string, error) {
 	return body, nil
 }
 
-func PostRequest(token string, body []byte) {
+func PostSlackChatMessageRequest(token string, body []byte) {
 	req, err := http.NewRequest(http.MethodPost, "https://slack.com/api/chat.postMessage", bytes.NewBuffer(body))
 	if err != nil {
 		fmt.Printf("client: could not create request: %s\n", err)
@@ -97,4 +128,46 @@ func PostRequest(token string, body []byte) {
 		os.Exit(1)
 	}
 	fmt.Printf("client: response body: %s\n", resBody)
+}
+
+func getBirthdayParts(p database.Person) (year, month, day int) {
+	birthdayParts := strings.Split(p.BirthDate, "-")
+
+	y, err := strconv.Atoi(birthdayParts[0])
+
+	if err != nil {
+		panic(err)
+	}
+
+	m, err := strconv.Atoi(birthdayParts[1])
+
+	if err != nil {
+		panic(err)
+	}
+
+	d, err := strconv.Atoi(birthdayParts[2])
+
+	if err != nil {
+		panic(err)
+	}
+
+	return y, m, d
+}
+
+func isBirthday(p database.Person) bool {
+	_, m, d := getBirthdayParts(p)
+
+	return int(time.Now().Month()) == m && time.Now().Day() == d
+}
+
+func getAge(p database.Person) int {
+	y, m, d := getBirthdayParts(p)
+
+	age := time.Now().Year() - y
+
+	if time.Now().Compare(time.Date(time.Now().Year(), time.Month(m), d, 0, 0, 0, 0, time.Local)) < 0 {
+		age--
+	}
+
+	return age
 }

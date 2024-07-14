@@ -3,10 +3,8 @@ FROM golang:1.22.5 AS build
 WORKDIR /app
  
 # COPY go.mod ./ 
-COPY ../go.mod go.sum ./
+COPY . .
 RUN go mod download
-
-COPY ../*.go ./
  
 RUN CGO_ENABLED=0 GOOS=linux go build -o /birthdays-tracker
 
@@ -16,6 +14,6 @@ COPY --from=build /birthdays-tracker .
 
 # copy all other files
 COPY .env .
-COPY ../web web
+COPY ./web ./web
 
 CMD ["/birthdays-tracker"]

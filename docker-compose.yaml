@@ -1,0 +1,30 @@
+services:
+  db:
+    env_file: ".env"
+    image: postgres:16.3
+    container_name: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - backend
+
+  app:
+    env_file: ".env"
+    build: 
+      dockerfile: Dockerfile
+    container_name: birthday-tracker
+    depends_on:
+      - db
+    ports:
+      - "1337:1337"
+    networks:
+      - backend
+
+volumes:
+  postgres_data:
+
+networks:
+  backend:
+    driver: bridge
