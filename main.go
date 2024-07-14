@@ -65,10 +65,12 @@ func removeBirthdayHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	initDatabase()
+
 	http.HandleFunc("GET /", getPageHandler)
 	http.HandleFunc("POST /", addBirthdayHandler)
 	http.HandleFunc("DELETE /{id}", removeBirthdayHandler)
 
-	log.Println("Starting server on port 1337")
+	log.Println("Listening on port 1337")
 	log.Fatal(http.ListenAndServe(":1337", nil))
 }

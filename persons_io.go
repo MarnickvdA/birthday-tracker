@@ -6,6 +6,8 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"io/fs"
+	"log"
 	"os"
 	"strings"
 	"sync"
@@ -17,6 +19,29 @@ const file = "data/birthdays.csv"
 var (
 	mu sync.Mutex
 )
+
+func initDatabase() {
+	mu.Lock()
+	defer mu.Unlock()
+
+	if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
+		log.Println("No database file found, trying to create new one at " + file)
+		err := os.Mkdir("data", fs.ModePerm)
+
+		if err != nil {
+			panic(err)
+		}
+
+		_, err = os.Create(file)
+		if err != nil {
+			panic(err)
+		}
+
+		log.Println("Database file created successfully.")
+	} else {
+		log.Println("Database file detected, we'll use that.")
+	}
+}
 
 func getPersons() (persons []Person, err error) {
 	mu.Lock()
@@ -45,7 +70,7 @@ func getPersons() (persons []Person, err error) {
 func addPerson(name, birthdate string) (person Person, err error) {
 	if name == "" || birthdate == "" {
 		fmt.Println("Invalid name or birthdate")
-		return Person{}, errors.New("Invalid name or birthdate")
+		return Person{}, errors.New("invalid name or birthdate")
 	}
 
 	hasher := crypto.SHA256.New()

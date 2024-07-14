@@ -2,6 +2,13 @@
 
 Super simple Go app to track birthdays of people.
 
+## Running in Docker
+
+```bash
+docker build --rm -t birthdays-tracker:alpha .
+docker run -d -p 1337:1337 --name birthdays-tracker birthdays-tracker:alpha 
+```
+
 ## TODO
 
 - Add Postgres DB
