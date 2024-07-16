@@ -20,6 +20,7 @@ Web app written in Go to track birthdays of people.
 - go
 - goose
 - sqlc
+- npm / tailwindcss
 
 ## Setup
 
@@ -27,6 +28,7 @@ We have some environment variables on which we depend in this project. Execute t
 
 ```bash
 cp .env.example .env
+go mod download
 ```
 
 Most important is to have a PostgresQL server running to which we can connect. Be sure to add the connection URL as `DB_URL` in .env
@@ -34,6 +36,14 @@ Most important is to have a PostgresQL server running to which we can connect. B
 ```bash
 # Run goose migrations on the postgres db
 goose postgres $DB_URL up
+```
+
+## Local development
+
+For streamlined development, always use our special dev script. It will load all the necessary resources for running the dev environment.
+
+```bash
+./dev.sh
 ```
 
 ## Running with Docker
