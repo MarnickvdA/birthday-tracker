@@ -31,3 +31,4 @@ go.work
 /data
 /birthdays-tracker
 node_modules
+/static/css

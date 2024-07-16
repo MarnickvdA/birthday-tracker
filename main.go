@@ -20,6 +20,8 @@ type apiConfig struct {
 //go:embed static
 var static embed.FS
 
+//go:generate npm run --prefix web/tailwindcss build
+
 func main() {
 	err := godotenv.Load(".env")
 	if err != nil {
@@ -45,7 +47,6 @@ func main() {
 	http.HandleFunc("DELETE /{id}", apiCfg.handlerRemovePerson)
 	http.HandleFunc("POST /today", apiCfg.handlerSendBirthdayMessage)
 
-	//go:generate npm run build
 	http.Handle("GET /static/", http.FileServer(http.FS(static)))
 
 	port := os.Getenv("PORT")
