@@ -20,7 +20,7 @@ FROM scratch
 
 COPY --from=build /birthday-tracker .
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --from=build /static/ /static/
+COPY --from=build /app/static/ /static/
 
 # copy all other files
 COPY .env.prod .env
