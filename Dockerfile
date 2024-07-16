@@ -13,7 +13,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /birthday-tracker
 
 FROM scratch
 
-COPY --from=build /birthdays-tracker .
+COPY --from=build /birthday-tracker .
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 # copy all other files
