@@ -9,7 +9,7 @@ RUN update-ca-certificates
 COPY . .
 RUN go mod download
  
-RUN CGO_ENABLED=0 GOOS=linux go build -o /birthdays-tracker
+RUN CGO_ENABLED=0 GOOS=linux go build -o /birthday-tracker
 
 FROM scratch
 
@@ -19,6 +19,6 @@ COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 # copy all other files
 COPY .env.prod .env
 COPY ./web ./web
-COPY ./public ./public
+COPY ./static ./static
 
-CMD ["/birthdays-tracker"]
+CMD ["/birthday-tracker"]
