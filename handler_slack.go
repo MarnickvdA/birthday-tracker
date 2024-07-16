@@ -34,7 +34,7 @@ func (cfg *apiConfig) handlerSendBirthdayMessage(w http.ResponseWriter, r *http.
 		}
 	}
 
-	message, err := PostBirthdaySlackMessage(birthdays)
+	message, err := sendBirthdaySlackMessage(birthdays)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -42,7 +42,7 @@ func (cfg *apiConfig) handlerSendBirthdayMessage(w http.ResponseWriter, r *http.
 	fmt.Fprintf(w, "%v", message)
 }
 
-func PostBirthdaySlackMessage(birthdays []Birthday) (string, error) {
+func sendBirthdaySlackMessage(birthdays []Birthday) (string, error) {
 	if len(birthdays) == 0 {
 		return "", errors.New("no birthdays to show")
 	}
@@ -101,22 +101,19 @@ func PostBirthdaySlackMessage(birthdays []Birthday) (string, error) {
 	]	
 }`, channel, len(messages), strings.Join(messages, ",\n"))
 
-	return body, nil
-}
-
-func PostSlackChatMessageRequest(token string, body []byte) {
-	req, err := http.NewRequest(http.MethodPost, "https://slack.com/api/chat.postMessage", bytes.NewBuffer(body))
+	req, err := http.NewRequest(http.MethodPost, "https://slack.com/api/chat.postMessage", bytes.NewBuffer([]byte(body)))
 	if err != nil {
 		fmt.Printf("client: could not create request: %s\n", err)
-		os.Exit(1)
+		return "", err
 	}
 
 	req.Header.Add("Authorization", "Bearer "+token)
+	req.Header.Add("Content-Type", "application/json")
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		fmt.Printf("client: error making http request: %s\n", err)
-		os.Exit(1)
+		return "", err
 	}
 
 	fmt.Printf("client: got response!\n")
@@ -125,9 +122,10 @@ func PostSlackChatMessageRequest(token string, body []byte) {
 	resBody, err := io.ReadAll(res.Body)
 	if err != nil {
 		fmt.Printf("client: could not read response body: %s\n", err)
-		os.Exit(1)
+		return "", err
 	}
-	fmt.Printf("client: response body: %s\n", resBody)
+
+	return string(resBody), nil
 }
 
 func getBirthdayParts(p database.Person) (year, month, day int) {

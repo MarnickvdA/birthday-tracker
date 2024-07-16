@@ -30,3 +30,4 @@ go.work
 /.env.prod
 /data
 /birthdays-tracker
+node_modules
