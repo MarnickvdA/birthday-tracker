@@ -54,7 +54,7 @@ func sendBirthdaySlackMessage(bd []database.GetScheduledBirthdayNotificationsFor
 func composeSlackMessage(birthdays []database.GetScheduledBirthdayNotificationsForTodayRow) (string, error) {
 	channel := os.Getenv("SLACK_CHANNEL")
 	if channel == "" {
-		return "", errors.New("environment variable SLACK_API_TOKEN not found")
+		return "", errors.New("environment variable SLACK_CHANNEL not found")
 	}
 
 	messages := make([]string, 0)
