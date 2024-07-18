@@ -7,12 +7,16 @@ Web app written in Go to track birthdays of people.
 - See overview of persons and their birthdays
 - Add new person with birthday
 - Remove persons
-- (WIP) Trigger Slack message of birthdays happening today
-- (WIP) Add cron configuration for running the birthday check every day
+- Automatically pushing Slack message of today's birthdays
+- (TODO) Edit person
 
-**Technical improvements**:
+**Technical Features**:
 
-- (WIP) Add automatic db migrations to the docker-compose script w/ goose
+- Web Server running fully on Go's `net/http` standard library
+- docker-compose for automatic container deployments
+- Database migrations ran on app startup
+- Frontend templated with Go's `html/template` standard library
+- Minimal CSS for builds with TailwindCSS
 
 ## Dependencies
 
@@ -31,12 +35,7 @@ cp .env.example .env
 go mod download
 ```
 
-Most important is to have a PostgresQL server running to which we can connect. Be sure to add the connection URL as `DB_URL` in .env
-
-```bash
-# Run goose migrations on the postgres db
-goose postgres $DB_URL up
-```
+Most important is to have a PostgresQL server running to which we can connect. Be sure to add the connection URL as `DB_URL` in .env and .env.prod. On app startup, migrations from the `sql/schema` folder will automatically be run.
 
 ## Local development
 
