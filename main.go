@@ -71,6 +71,11 @@ func main() {
 }
 
 func scheduleAndPush(cfg *apiConfig) {
+	if os.Getenv("SLACK_API_TOKEN") == "" || os.Getenv("SLACK_CHANNEL") == "" {
+		log.Println("Slack cron job skipped, required environment variables missing.")
+		return
+	}
+
 	fmt.Println()
 	log.Println("=====[ SLACK CRON JOB ]=====")
 
