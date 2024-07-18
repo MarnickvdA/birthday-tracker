@@ -11,6 +11,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/pressly/goose/v3"
+
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
@@ -23,6 +25,9 @@ type apiConfig struct {
 var static embed.FS
 
 //go:generate npm run --prefix web/tailwindcss build
+
+//go:embed sql/schema/*.sql
+var embedMigrations embed.FS
 
 func main() {
 	err := godotenv.Load(".env")
@@ -42,6 +47,15 @@ func main() {
 
 	apiCfg := apiConfig{
 		DB: database.New(conn),
+	}
+
+	goose.SetBaseFS(embedMigrations)
+	if err := goose.SetDialect("postgres"); err != nil {
+		panic(err)
+	}
+
+	if err := goose.Up(conn, "sql/schema"); err != nil {
+		panic(err)
 	}
 
 	http.HandleFunc("GET /", apiCfg.handlerGetHomePage)
@@ -77,11 +91,11 @@ func scheduleAndPush(cfg *apiConfig) {
 	}
 
 	fmt.Println()
-	log.Println("=====[ SLACK CRON JOB ]=====")
+	log.Println("\033[1;32m=====[ SLACK CRON JOB ]=====\033[0m")
 
 	cfg.scheduleNotifications(context.Background())
 	cfg.pushBirthdayNotification(context.Background())
 
-	log.Println("=====[   CRON EXITED  ]=====")
+	log.Println("\033[1;32m=====[   CRON EXITED  ]=====\033[0m")
 	fmt.Println()
 }
