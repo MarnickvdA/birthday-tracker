@@ -4,6 +4,13 @@
 
 package database
 
+type BirthdayNotification struct {
+	ID          int32
+	PersonID    string
+	ScheduledAt string
+	State       string
+}
+
 type Person struct {
 	ID        string
 	Name      string

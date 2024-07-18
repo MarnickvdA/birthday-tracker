@@ -1,9 +1,11 @@
 package main
 
 import (
-	"birthdays-tracker/internal/database"
+	"birthday-tracker/internal/database"
+	"context"
 	"database/sql"
 	"embed"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -45,7 +47,6 @@ func main() {
 	http.HandleFunc("GET /", apiCfg.handlerGetHomePage)
 	http.HandleFunc("POST /", apiCfg.handlerCreatePerson)
 	http.HandleFunc("DELETE /{id}", apiCfg.handlerRemovePerson)
-	http.HandleFunc("POST /today", apiCfg.handlerSendBirthdayMessage)
 
 	http.Handle("GET /static/", http.FileServer(http.FS(static)))
 
@@ -57,12 +58,25 @@ func main() {
 	ticker := time.NewTicker(1 * time.Hour)
 	defer ticker.Stop()
 
+	scheduleAndPush(&apiCfg)
+
 	go func() {
 		for range ticker.C {
-			log.Println("What is that mysterious ticking noise???")
+			scheduleAndPush(&apiCfg)
 		}
 	}()
 
 	log.Printf("Listening on port %s\n", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
+}
+
+func scheduleAndPush(cfg *apiConfig) {
+	fmt.Println()
+	log.Println("=====[ SLACK CRON JOB ]=====")
+
+	cfg.scheduleNotifications(context.Background())
+	cfg.pushBirthdayNotification(context.Background())
+
+	log.Println("=====[   CRON EXITED  ]=====")
+	fmt.Println()
 }

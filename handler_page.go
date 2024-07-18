@@ -1,7 +1,7 @@
 package main
 
 import (
-	"birthdays-tracker/internal/database"
+	"birthday-tracker/internal/database"
 	"html/template"
 	"log"
 	"net/http"

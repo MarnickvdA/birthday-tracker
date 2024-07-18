@@ -38,6 +38,7 @@ func (q *Queries) DeletePerson(ctx context.Context, id string) error {
 
 const listPersons = `-- name: ListPersons :many
 SELECT id, name, birth_date FROM persons
+ORDER BY TO_CHAR(TO_DATE(birth_date, 'YYYY-MM-DD'), 'MM-DD')
 `
 
 func (q *Queries) ListPersons(ctx context.Context) ([]Person, error) {

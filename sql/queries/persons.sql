@@ -1,5 +1,6 @@
 -- name: ListPersons :many
-SELECT id, name, birth_date FROM persons;
+SELECT id, name, birth_date FROM persons
+ORDER BY TO_CHAR(TO_DATE(birth_date, 'YYYY-MM-DD'), 'MM-DD');
 
 -- name: CreatePerson :one
 INSERT INTO persons (id, name, birth_date)
