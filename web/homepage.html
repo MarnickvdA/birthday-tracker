@@ -99,7 +99,7 @@
           </div>
         </div>
       </div>
-      <footer class="text-center">
+      <footer class="text-center pb-8">
         <a
           target="_blank"
           href="https://github.com/marnickvda/birthday-tracker"
@@ -111,6 +111,10 @@
     </div>
 
     <script>
+      if (window.history.replaceState) {
+        window.history.replaceState(null, null, window.location.href);
+      }
+
       function deleteName(id) {
         var xhr = new XMLHttpRequest();
         xhr.open('DELETE', '/' + encodeURIComponent(id), true);
