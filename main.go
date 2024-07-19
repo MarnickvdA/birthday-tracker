@@ -94,7 +94,10 @@ func scheduleAndPush(cfg *apiConfig) {
 	log.Println("\033[1;32m=====[ SLACK CRON JOB ]=====\033[0m")
 
 	cfg.scheduleNotifications(context.Background())
-	cfg.pushBirthdayNotification(context.Background())
+
+	if time.Now().Local().Hour() == 8 {
+		cfg.pushBirthdayNotification(context.Background())
+	}
 
 	log.Println("\033[1;32m=====[   CRON EXITED  ]=====\033[0m")
 	fmt.Println()
