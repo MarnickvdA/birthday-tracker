@@ -1,6 +1,6 @@
 # Birthday Tracker 🎈
 
-Web app written in Go to track birthdays of people.
+Birthday tracker integrated with Slack API to notify a channel about people's birthdays! It's a Web app written in Go to track birthdays of people. 
 
 **Features**:
 
