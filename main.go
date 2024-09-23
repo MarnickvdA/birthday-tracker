@@ -95,7 +95,7 @@ func scheduleAndPush(cfg *apiConfig) {
 
 	cfg.scheduleNotifications(context.Background())
 
-	if time.Now().Local().Hour() == 8 {
+	if time.Now().UTC().Hour() == 5 {
 		cfg.pushBirthdayNotification(context.Background())
 	}
 
