@@ -11,4 +11,4 @@ echo -e "==>\033[1;32m Compiling tailwindcss based on styling in web/*.html\033[
 npm run --prefix web/tailwindcss build
 
 echo -e "\n==>\033[1;32m Starting the Go application\033[0m"
-go run *.go
+DEV=1 go run *.go

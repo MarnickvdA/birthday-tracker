@@ -1,22 +1,27 @@
 # Birthday Tracker 🎈
 
-Birthday tracker integrated with Slack API to notify a channel about people's birthdays! It's a Web app written in Go to track birthdays of people. 
+Birthday tracker integrated with Slack API to notify a channel about people's birthdays! It's a Web app written in Go to track birthdays of people.
 
 **Features**:
 
-- See overview of persons and their birthdays
-- Add new person with birthday
-- Remove persons
-- Automatically pushing Slack message of today's birthdays
-- (TODO) Edit person
+- [x] See overview of persons and their birthdays
+- [x] Add new person with birthday
+- [x] Remove persons
+- [x] Automatically pushing Slack message of today's birthdays
+- [ ] Edit person
+- [ ] Automatical birthday messages with LLM generated text
+- [ ] Improved overview of birthdays in calendar view
 
 **Technical Features**:
 
-- Web Server running fully on Go's `net/http` standard library
-- docker-compose for automatic container deployments
-- Database migrations ran on app startup
-- Frontend templated with Go's `html/template` standard library
-- Minimal CSS for builds with TailwindCSS
+- [x] Web Server running fully on Go's `net/http` standard library
+- [x] docker-compose for automatic container deployments
+- [x] Database migrations ran on app startup
+- [x] Frontend templated with Go's `html/template` standard library
+- [x] Minimal CSS for builds with TailwindCSS
+- [ ] Setup CI/CD Pipeline on GitHub to build image
+- [ ] Use HTMX because why not?
+- [ ] Add telemetry setup
 
 ## Dependencies
 

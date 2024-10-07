@@ -23,7 +23,6 @@ COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=build /app/static/ /static/
 
 # copy all other files
-COPY .env.prod .env
 COPY ./web ./web
 
 CMD ["/birthday-tracker"]

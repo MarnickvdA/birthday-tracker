@@ -12,7 +12,8 @@ services:
 
   app:
     env_file: ".env.prod"
-    build: 
+    # build: ghcr.io/marnickvda/birthday-tracker:0.1.0
+    build:
       dockerfile: Dockerfile
     container_name: birthday-tracker
     depends_on:

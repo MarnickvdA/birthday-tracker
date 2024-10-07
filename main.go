@@ -30,9 +30,12 @@ var static embed.FS
 var embedMigrations embed.FS
 
 func main() {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatalf("Error loading .env file: %s", err)
+	env := os.Getenv("DEV")
+	if env == "1" {
+		err := godotenv.Load(".env")
+		if err != nil {
+			log.Fatalf("Error loading .env file: %s", err)
+		}
 	}
 
 	dbUrl := os.Getenv("DB_URL")
